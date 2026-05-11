@@ -7,11 +7,11 @@ if [ -z "$OXBOW_ENV_SOURCED" ]; then
 fi
 
 ## To clone all of benchmarks.
-# git clone --recurse-submodules -j8 git@github.com:casys-kaist-internal/oxbow.bench.git $BENCH
+# git clone --recurse-submodules -j8 git@github.com:xlab-uiuc/oxbow.bench.git $BENCH
 ## Or, with old git,
-# git clone git@github.com:casys-kaist-internal/oxbow.bench.git $BENCH
+# git clone git@github.com:xlab-uiuc/oxbow.bench.git $BENCH
 # cd $BENCH
 # git submodule update --init --recursive
 
-git clone git@github.com:casys-kaist-internal/oxbow.bench.git $BENCH
+git clone git@github.com:xlab-uiuc/oxbow.bench.git $BENCH
 echo "Read $BENCH/README.md to download benchmarks."
