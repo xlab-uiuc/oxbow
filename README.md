@@ -19,8 +19,7 @@ Please check [Host-journaling](Documentation/host-journaling.md) for
 `Host-journaling` setup.
 
 **Notice to OSDI 2026 AE reviewers**:
-The [Artifact Evaluation document](Documentation/artifact-evaluation.md) will be
-updated soon, once our testbed are ready for use.
+See the [Artifact Evaluation document](Documentation/artifact-evaluation.md).
 
 ## 0. Different names used in the source code
 

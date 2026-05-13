@@ -1,7 +1,5 @@
 # OSDI 2026 Artifact Evaluation
 
-**This document will be updated soon.**
-
 We provide two ways to evaluate Oxbow.
 
 1. **Running in a virtual machine.** We provide instructions for running Oxbow
@@ -25,12 +23,12 @@ We provide two ways to evaluate Oxbow.
 This benchmark covers Figure 9 (Throughput), Figure 10 (CPU consumption), and
 Table 1 (fsync latency).
 
-(To be updated soon.)
+(This section will be updated soon. ETA: May 14)
 
 ## uFS Microbench - Latency
 
 This benchmark covers Figure 8.
 
-(To be updated soon.)
+(This section will be updated soon. ETA: May 14)
 
 ## More benchmarks will be added
