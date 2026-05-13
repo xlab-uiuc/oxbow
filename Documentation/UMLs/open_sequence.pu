@@ -1,0 +1,65 @@
+@startuml Open Sequence Diagram
+participant App as app
+participant LibFS as libfs
+participant SecureDaemon as daemon
+participant Kernel as kernel
+app -> libfs ++ : open()
+
+libfs -> kernel --++ : open syscall (request fd)
+return fd
+activate libfs
+
+hnote over libfs: Allocate LibFS file metadata
+' hnote over libfs: Wait for <color #0000FF>f_sem</color> (not initial)
+hnote over libfs: Allocate LibFS inode
+
+libfs -> kernel --++ : mmap syscall (shared memory)
+return 
+activate libfs
+
+libfs -> kernel --++ : syscall(userfaultfd)
+return uffd
+activate libfs
+
+libfs -> kernel --++ : ioctl(UFFDIO_API)
+return
+activate libfs
+
+libfs -> kernel --++ : ioctl(UFFDIO_OXBOW_LIBFS_REG)
+kernel -> daemon ++ : wake up dir_worker\n(ILLUFS_EVENT_NOTIFY_OPEN)
+kernel --> libfs --++
+hnote over daemon: - Allocate SecureDaemon file\n- Register UFFD fd
+libfs -> daemon ++ #AAFFAA : msg(OPEN) req
+libfs --> app -- : fd
+
+hnote over daemon: Wait for <color #FF0000>f_sem</color>
+' Allocate SecureDaemon\n file metadata
+
+daemon --> libfs --++ #AAFFAA : msg(OPEN) resp
+hnote over libfs : Init shared bitmaps\n//(Difference with that of SecureDaemon?)//
+hnote over libfs : Post <color #0000FF>f_sem</color>\n(if others tried to access to this file)
+libfs -[#FFFFFF]-> libfs
+deactivate libfs
+
+daemon -> kernel --++ : ioctl(DOFDIO_DAEMON_OPEN)
+hnote over kernel: Allocate a new fd
+return fd
+activate daemon
+
+hnote over daemon: mmap the file (shared memory)
+
+daemon -> kernel --++ : ioctl(ILLU_IOC_INIT_FDATAPATH)
+hnote over kernel: //What does it do?//
+return
+activate daemon
+hnote over daemon: Init shared inode and bitmaps\nCreate k_fops_handler thread (post <color #FF0000>f_sem</color>)
+
+' daemon -> kernel --++ : ioctl(INIT_FDATAPATH)
+' hnote over kernel: Register SecureDaemon\n as UFFD handler
+' return 
+' activate daemon
+
+
+
+
+@enduml

@@ -1,0 +1,34 @@
+dep_pkgs/bin/*
+tools/qemu/vm_imgs/*
+tools/qemu/qemu-*
+tools/bin/*
+tools/nvme-cli/nvme-cli
+*.vscode
+.cache
+oxbow/libfs/.cache
+oxbow/secure_daemon/.cache
+oxbow/secure_daemon/.vscode
+oxbow/devfs/.cache
+*.img
+*.old
+oxbow/libfs/include/common/oxbow_debug.h
+*.txt
+*.json
+*.csv
+bench
+myconf.sh
+go.sh
+go_r.sh
+*.log
+
+# flamegraph
+out.folded
+out.perf
+
+.codex
+.cursor
+.cursorignore
+
+# Perf files
+*.out
+*.data

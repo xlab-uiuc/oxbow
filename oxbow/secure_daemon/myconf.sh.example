@@ -1,0 +1,19 @@
+#!/bin/bash
+# Copy the example file.
+#
+# cp myconf.sh.example myconf.sh
+#
+# Configs in this file overwrites configs in secure_daemon_conf.sh
+
+# Single VF:
+#   export pcie_nvme_addr="0000:d8:00.1"
+# Multiple VFs (whitespace-separated) to expand total IO queue count
+# beyond a single VF's HW cap. Must be whitespace-separated so the same
+# string works with SPDK setup scripts (PCI_ALLOWED).
+# storage_engine_thread_num is split evenly across the VFs.
+#   export pcie_nvme_addr="0000:d8:00.1 0000:d8:00.2"
+#   export storage_engine_thread_num=16   # 8 qpairs per VF
+export pcie_nvme_addr=""
+export rpc_rdma_ip_addr=""
+
+# Add more...

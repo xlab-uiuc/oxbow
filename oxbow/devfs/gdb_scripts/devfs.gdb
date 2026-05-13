@@ -1,0 +1,1 @@
+set environment LD_LIBRARY_PATH ./lib/spdk/build/lib/:./lib/spdk/dpdk/build/lib/

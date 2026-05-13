@@ -1,0 +1,1 @@
+../../device/nvme-of/config_nvmf_client.sh

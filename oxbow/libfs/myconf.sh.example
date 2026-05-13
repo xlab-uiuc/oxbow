@@ -1,0 +1,8 @@
+#!/bin/bash
+# Copy the example file.
+#
+# cp myconf.sh.example myconf.sh
+#
+# Configs in myconf.sh overwrites configs in libfs_conf.sh
+
+# Add more...

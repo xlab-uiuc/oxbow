@@ -1,0 +1,33 @@
+@startuml Open
+App -> LibFS : open
+activate LibFS
+hnote over LibFS : mmap
+LibFS -> SecureDaemon : open_async(path,start_addr,len)
+deactivate LibFS
+activate SecureDaemon
+hnote over LibFS : Set flag:\nopen request\nis on-going
+/ hnote over SecureDaemon : mmap
+hnote over SecureDaemon : register as shared memory
+hnote over SecureDaemon : add to file-address mapping table ((LibFS id + fd) to address)
+App -> LibFS : Ex) Read
+activate LibFS
+hnote over LibFS : Pending read request
+SecureDaemon -> LibFS : open ACK
+deactivate SecureDaemon
+LibFS -> KernelFS : read (resumed) and page fault
+deactivate LibFS
+activate KernelFS
+KernelFS -> SecureDaemon : Pass userfaultfd event
+deactivate KernelFS
+hnote over SecureDaemon : Handle userfaultfd with read IO
+activate SecureDaemon
+SecureDaemon -> KernelFS : Return to Kernel's page fault handle
+deactivate SecureDaemon
+activate KernelFS
+KernelFS -> LibFS : Return to LibFS
+deactivate KernelFS
+activate LibFS
+LibFS -> App : Return read()
+deactivate LibFS
+
+@enduml

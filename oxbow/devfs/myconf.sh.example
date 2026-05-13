@@ -1,0 +1,12 @@
+#!/bin/bash
+# Copy the example file.
+#
+# cp myconf.sh.example myconf.sh
+#
+# Configs in this file overwrites configs in devfs_conf.sh
+
+export rpc_rdma_ip_addr=""
+export pcie_nvme_addr=""
+export nvmf_ip_addr=""
+
+# Add more...

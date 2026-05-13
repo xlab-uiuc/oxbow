@@ -1,0 +1,1 @@
+Header files in this directory are shared among LibFS, KernFS, and DevFS.

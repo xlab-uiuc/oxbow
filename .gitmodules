@@ -1,0 +1,36 @@
+[submodule "dep_pkgs/meson"]
+	path = dep_pkgs/meson
+	url = https://github.com/mesonbuild/meson.git
+[submodule "dep_pkgs/ninja"]
+	path = dep_pkgs/ninja
+	url = https://github.com/ninja-build/ninja.git
+[submodule "oxbow/libfs/lib/syscall_intercept"]
+	path = oxbow/libfs/lib/syscall_intercept
+	url = https://github.com/pmem/syscall_intercept.git
+[submodule "oxbow/libfs/lib/log.c"]
+	path = oxbow/libfs/lib/log.c
+	url = https://github.com/yulistic/log.c.git
+[submodule "oxbow/libfs/lib/spdk"]
+	path = oxbow/libfs/lib/spdk
+	url = https://github.com/casys-kaist-internal/oxbow-spdk.code.git
+[submodule "oxbow/libfs/lib/rdma-core"]
+	path = oxbow/libfs/lib/rdma-core
+	url = https://github.com/linux-rdma/rdma-core.git
+[submodule "oxbow/libfs/lib/oxbow-rpc"]
+	path = oxbow/libfs/lib/oxbow-rpc
+	url = https://github.com/yulistic/oxbow-rpc.git
+[submodule "oxbow/libfs/lib/data_fetcher"]
+	path = oxbow/libfs/lib/data_fetcher
+	url = https://github.com/yulistic/data-fetcher.git
+[submodule "oxbow/libfs/lib/c-thread-pool"]
+	path = oxbow/libfs/lib/c-thread-pool
+	url = https://github.com/yulistic/c-thread-pool.git
+[submodule "oxbow/libfs/lib/BitArray"]
+	path = oxbow/libfs/lib/BitArray
+	url = https://github.com/yulistic/BitArray.git
+[submodule "oxbow/linux-kernel"]
+	path = oxbow/linux-kernel
+	url = git@github.com:casys-kaist-internal/oxbow-kernel.code.git
+[submodule "scripts/host/nvme-sriov"]
+	path = scripts/host/nvme-sriov
+	url = https://github.com/yulistic/nvme-sriov.git
