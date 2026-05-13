@@ -30,7 +30,7 @@
 	url = https://github.com/yulistic/BitArray.git
 [submodule "oxbow/linux-kernel"]
 	path = oxbow/linux-kernel
-	url = git@github.com:casys-kaist-internal/oxbow-kernel.code.git
+	url = https://github.com/xlab-uiuc/oxbow.kernel.git
 [submodule "scripts/host/nvme-sriov"]
 	path = scripts/host/nvme-sriov
 	url = https://github.com/yulistic/nvme-sriov.git
