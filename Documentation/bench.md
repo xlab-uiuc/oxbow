@@ -32,7 +32,7 @@ Reference: `bench/README.md`.
 
 ## Microbenchmark
 
-This benchmark is different from [uFS microbenchmark](#ufs-microbench) that is
+This benchmark is different from the [uFS microbenchmark](#ufs-microbenchmark)
 described in the paper.
 
 ### Compile
@@ -42,7 +42,7 @@ cd bench/micro
 ./build.sh
 ```
 
-### Run
+### Run the benchmark
 
 You must pass `$OXBOW_PREFIX` (for example, `/oxbow` as defined in `set_env.sh`)
 as the file path prefix. Refer to the usage information for other options. For
@@ -102,8 +102,77 @@ Mount the NFS directory at `/mnt/oxbow_flag`. For example:
 sudo mount -t nfs libra06-rdma2:/mnt/oxbow_flag /mnt/oxbow_flag
 ```
 
-For more details on installing and configuring NFS, refer to external materials.
+For more details on installing and configuring NFS, refer to the relevant NFS
+documentation.
 
-## uFS Microbench
+## uFS Microbenchmark
 
-(To be updated soon.)
+This is the microbenchmark used in the Oxbow paper (OSDI'26).
+
+```shell
+cd uFS
+git checkout oxbow
+```
+
+The `uFS/cfs` directory contains the source code for `uFS` (a file system),
+which is not required to run the microbenchmarks. Therefore, you can ignore
+failures to fetch its submodules.
+
+### Build
+
+```shell
+cd scripts
+./cmpl_bench.sh oxbow micro
+```
+
+### Configure the run
+
+In `scripts/config.sh`, you can configure the benchmark. For example:
+
+```shell
+RUN_LATENCY # 0 to measure throughput, 1 to measure latency.
+UFSBENCH_WORKLOADS # Select workloads to run.
+UFSBENCH_IOSIZE # I/O size.
+UFSBENCH_FILESIZE # Per-process file size.
+UFSBENCH_ENABLE_PERF # Enable perf.
+...
+```
+
+### Run
+
+The script assumes the tmux pane layout described in
+[Run Oxbow with scripts](deploy-on-testbed.md#run-oxbow-with-scripts).
+Therefore, run the script from the bottom-left pane of that tmux session.
+
+```shell
+cd scripts
+./run_bench.sh microbench oxbow
+```
+
+### Check results
+
+If the benchmark runs successfully, the results are stored in the `DATA`
+directory. The symbolic link `DATA_microbench_oxbow_latest` points to the most
+recent result directory.
+
+Use `parse_all.sh` to parse the results:
+
+```shell
+cd scripts
+
+# Oxbow results:
+./parse_all.sh micro oxbow ../DATA/DATA_microbench_oxbow_latest
+```
+
+The parsed result files are created in the directory where the results are stored
+(e.g., `DATA_microbench_oxbow_latest`).
+
+### Run Ext4
+
+Use the same scripts, but pass `ext4` or `ext4dj` instead of `oxbow`.
+
+```shell
+./cmpl_bench.sh ext4 micro # Build.
+./run_bench.sh microbench ext4dj # Run Ext4 with data journaling.
+./parse_all.sh micro ext4 ../DATA/DATA_microbench_ext4dj_latest
+```
