@@ -6,17 +6,32 @@ if [[ -z "${OXBOW_ROOT}" ]]; then
 	exit 1
 fi
 
+SKIP_SYSCALL_INTERCEPT=0
+
+while getopts "d" opt; do
+	case $opt in
+	d)
+		SKIP_SYSCALL_INTERCEPT=1
+		;;
+	*)
+		exit 2
+		;;
+	esac
+done
+
 # Install syscall_intercept
-sudo apt install -y pkg-config libcapstone-dev cmake
-(
-	cd syscall_intercept || exit
-	mkdir -p build
-	mkdir -p install
-	cd build || exit
-	cmake -DCMAKE_INSTALL_PREFIX=$SYSCALL_INTERCEPT_INSTALL -DCMAKE_BUILD_TYPE=Release ..
-	make
-	make install
-)
+if [ $SKIP_SYSCALL_INTERCEPT = 0 ]; then
+	sudo apt install -y pkg-config libcapstone-dev cmake
+	(
+		cd syscall_intercept || exit
+		mkdir -p build
+		mkdir -p install
+		cd build || exit
+		cmake -DCMAKE_INSTALL_PREFIX=$SYSCALL_INTERCEPT_INSTALL -DCMAKE_BUILD_TYPE=Release ..
+		make
+		make install
+	)
+fi
 
 # Install spdk
 # Refer to https://spdk.io/news/2019/05/06/nvme/ for the options: --enable-lto

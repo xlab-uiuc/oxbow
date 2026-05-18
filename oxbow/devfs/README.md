@@ -27,16 +27,27 @@ For now, you have to set the number of I/O thread in the
 	env_opts->core_mask = "0xf"; // -c core mask. 4 cores
 ```
 
-
 ### Build dependencies
 
-LibFS and DevFS shares a library directory. You only need to compile the
-libraries once if you run DevFS on the host. If you are on the device, you don't
-need to build `syscall_intercept` library.
+LibFS and DevFS share a library directory. You only need to compile the
+libraries once if you run DevFS on the host.
+
+If you are on the device, you don't need to build the `syscall_intercept`
+library. Pass `-d` to skip it.
 
 ```shell
 cd oxbow/devfs/lib
-./install.sh
+./install.sh -d
+```
+
+### Copy `oxbow_kernel.h`
+
+This header defines common constants used by Oxbow components. Since the full
+kernel source tree is not needed, copy only this file as shown below.
+
+```shell
+# From the host (assuming the kernel source code has been cloned):
+scp oxbow/linux-kernel/include/uapi/linux/oxbow/oxbow_kernel.h <dpu_ipaddr>:<oxbow_root>/oxbow/linux-kernel/include/uapi/linux/oxbow/
 ```
 
 ### Hugepages and device binding for SPDK library
