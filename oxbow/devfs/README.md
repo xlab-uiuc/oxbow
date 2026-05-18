@@ -10,6 +10,12 @@ DevFS (i.e., on the host for `Host-journaling` mode or on the device).
 We assume RDMA connection between the host and the Bluefield DPU is set
 correctly, which might require appropriate RDMA driver (e.g., OFED_MLNX RDMA).
 
+## Source code path
+
+Benchmark scripts ([bench.md](../../Documentation/bench.md)) assume that the
+host and DPU source trees are located at the same path. Therefore, place the
+device-side source code at the same path as the host-side source code.
+
 ## Set environment variables
 
 ```shell
