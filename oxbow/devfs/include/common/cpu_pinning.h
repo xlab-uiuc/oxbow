@@ -34,9 +34,9 @@
  *     to NUMA1. DPDK lcores and hugepages land on both sockets.
  *
  *   OXB_PIN_MODE_NUMA0_ONLY
- *     Pin every IO worker to NUMA0 only (CPU = OXB_NUMA0_BASE + tid).
- *     Useful for single-socket experiments. Requires total <= number of
- *     CPUs on NUMA0 (Libra06: <= 16 logical primary CPUs).
+ *     Pin every IO worker to NUMA0 primary CPUs first (CPU 0..15),
+ *     then to NUMA0 hyper-thread siblings (CPU 32..47) when total
+ *     worker/qpair count exceeds 16.
  *
  *   OXB_PIN_MODE_NUMA1_ONLY
  *     Pin every IO worker to NUMA1 primary CPUs first (CPU 16..31),
@@ -65,12 +65,15 @@
  * Examples (OXB_PIN_MODE_NUMA0_ONLY):
  *   total=8  -> tid 0..7 -> CPU 0..7
  *   total=16 -> tid 0..15 -> CPU 0..15
+ *   total=24 -> tid 0..15 -> CPU 0..15, tid 16..23 -> CPU 32..39
  */
 static inline int oxb_pin_cpu_for_tid(int tid, int total)
 {
 #if OXB_PIN_MODE == OXB_PIN_MODE_NUMA0_ONLY
 	(void)total;
-	return OXB_NUMA0_BASE + tid;
+	if (tid < 16)
+		return OXB_NUMA0_BASE + tid;
+	return OXB_NUMA0_HT_BASE + (tid - 16);
 #elif OXB_PIN_MODE == OXB_PIN_MODE_NUMA1_ONLY
 	(void)total;
 	if (tid < 16)

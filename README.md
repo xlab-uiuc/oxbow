@@ -320,6 +320,10 @@ export rpc_rdma_ip_addr="192.168.14.114" # device address for device journaling
 It is required to set the proper values for `pcie_nvme_addr` and
 `rpc_rdma_ip_addr` to run Secure Daemon.
 
+Additionally, configure NUMA binding and CPU pinning in
+`oxbow/secure_daemon/include/common/cpu_pinning.h`.
+See [IO Thread Pinning](Documentation/io-thread-pinning.md).
+
 ### 8.2 Configure DevFS
 
 Refer to [`oxbow/devfs/README.md`](oxbow/devfs/README.md).
