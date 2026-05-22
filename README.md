@@ -286,6 +286,8 @@ cd oxbow/libfs
 
 1. ~~`filesystem` variable in the `oxbow/devfs/meson.build` file~~
 
+Set the appropriate values for the Oxbow layout. See [Format Oxbow](#9-format-oxbow).
+
 And build it.
 
 ```shell
@@ -334,6 +336,23 @@ There is a file `oxbow/libfs/libfs_conf.sh` for the libfs configuration, but you
 don't need to modify it.
 
 ## 9 Format Oxbow
+
+Configure the size of the Oxbow layout in `oxbow/secure_daemon/src/fs/ext4_mkfs.c`.
+The following two constants determine the layout.
+
+```c
+/* Example to set up: 12GB filesystem + 3GB journal + 3GB staging. */
+
+// 18 GB. Total size of the Oxbow layout.
+#define EXT4_TOTAL_PARTITION_SIZE (18UL * 1024 * 1024 * 1024)
+
+// 3 GB. Size of the journaling and staging areas.
+#define EXT4_NR_JOURNAL_BLOCKS ((3UL * 1024 * 1024 * 1024) / 4096)
+```
+
+Rebuild the components to apply the changes.
+
+Then format the layout with the script:
 
 ```shell
 # Do mkfs with this script. (The script assumes SR-IOV setup.)
