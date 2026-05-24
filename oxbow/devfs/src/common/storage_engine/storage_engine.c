@@ -104,7 +104,7 @@ int init_storage_engine(enum storage_engine_type type, struct se_config *config,
 			return rc;
 		}
 
-		se_thpool = config->nvmf.worker_thpool;
+		se_thpool = config->worker_thpool;
 
 		return 0;
 

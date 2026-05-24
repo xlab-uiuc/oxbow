@@ -572,7 +572,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Failed to initialize NVMf storage engine\n");
 		return 1;
 	}
-	thpool = se_config.nvmf.worker_thpool;
+	thpool = se_config.worker_thpool;
 
 	printf("NVMf throughput test\n");
 	printf("====================\n");

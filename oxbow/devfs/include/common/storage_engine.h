@@ -22,8 +22,6 @@ struct nvmf_config {
 	int port;
 	char subnqn_name[128]; // TODO: Is it sufficient?
 	uint32_t num_io_requests; // The max number of the io requests in qpair.
-	int num_qpair; // The number of qpairs == # of io threads. == # of rpc handler threads.
-	threadpool worker_thpool; // Created thread pool is returned.
 };
 
 struct se_config {
@@ -31,6 +29,7 @@ struct se_config {
 		struct nvme_config nvme;
 		struct nvmf_config nvmf;
 	};
+	threadpool worker_thpool; // Created thread pool is returned.
 };
 
 struct storage_operations {

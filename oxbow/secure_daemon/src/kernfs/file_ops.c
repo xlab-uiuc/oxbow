@@ -841,7 +841,7 @@ static void *read_worker_loop(void *arg)
 	 */
 	tls_tid = my_tid;
 	tls_ioworker = 1;
-	target_cpu = oxb_pin_cpu_for_tid(my_tid, total_qpair_nr);
+	target_cpu = oxb_sd_pin_cpu_for_tid(my_tid, total_qpair_nr);
 	rd_worker_pin_cpu(target_cpu);
 
 	snprintf(thread_name, sizeof(thread_name), "oxb_rd_w_%d", my_idx);

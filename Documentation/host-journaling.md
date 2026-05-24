@@ -55,6 +55,26 @@ scripts/sync_device.sh -s fs -t devfs
 scripts/sync_device.sh -s fs -t secure_daemon
 ```
 
+## Required configuration
+
+If you run Oxbow with an SSD that supports SR-IOV and namespace sharing, you
+have to increase the size of hugepages for SPDK use. In
+`scripts/host/setup_spdk.sh` file:
+
+```shell
+TOTAL_HUGEMEM_SIZE=8192 # in MB. For host journaling mode.
+```
+
+Next, one VF needs to be dedicated to DevFS running on the host. Refer to
+`scripts/host/nvme-sriov/setup_vf.sh`. Configure DevFS to use that VF in
+`oxbow/devfs/devfs_config.sh` or `oxbow/devfs/myconf.sh`.
+
+```shell
+# For example,
+# export pcie_nvme_addr="0000:d8:00.0" # Device-journaling
+export pcie_nvme_addr="0000:d8:00.4" # Host-journaling
+```
+
 ## Things to know
 
 - DevFS does not do polling when it runs on the host to save host CPU resources.

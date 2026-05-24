@@ -57,6 +57,8 @@ static inline uint32_t nvmf_inflight_cap(uint32_t default_cap)
 	int v = g_devfs_conf.nvmf_max_inflight_per_qpair;
 	uint32_t conf_cap;
 
+	oxbow_assert(default_cap > 0);
+
 	if (v <= 0)
 		return default_cap;
 	conf_cap = (uint32_t)v;
@@ -1114,7 +1116,7 @@ static void *nvme_poll_ctrlrs(void *arg)
 }
 
 static void construct_nvmf_config_string(char *str,
-					 struct nvmf_config *nvmf_conf)
+					 const struct nvmf_config *nvmf_conf)
 {
 	// Example string:
 	// "trtype:RDMA adrfam:IPv4 traddr:192.168.14.113 trsvcid:4420 subnqn:oxbow-nvmf"
@@ -1126,7 +1128,7 @@ static void construct_nvmf_config_string(char *str,
 }
 
 static void construct_nvme_config_string(char *str,
-					 struct nvme_config *nvme_conf)
+					 const struct nvme_config *nvme_conf)
 {
 	// Example string:
 	// "trtype:PCIe traddr:0000:00:05.0"
@@ -1136,26 +1138,54 @@ static void construct_nvme_config_string(char *str,
 	se_info("NVMF Config String:%s", str);
 }
 
+static int create_devfs_core_mask(int num_qpair, char *core_mask_str,
+				  size_t core_mask_str_size)
+{
+	unsigned long core_mask = 0;
+
+	for (int tid = 0; tid < num_qpair; tid++) {
+		int cpu = oxb_devfs_pin_cpu_for_tid(tid, num_qpair);
+		int numa = oxb_devfs_pin_numa_for_tid(tid, num_qpair);
+		(void)numa;
+
+		if (cpu < 0 || cpu >= (int)(sizeof(core_mask) * 8)) {
+			se_error("create_devfs_core_mask: cpu %d for tid %d "
+				 "out of mask range (total=%d)",
+				 cpu, tid, num_qpair);
+			return -1;
+		}
+
+		core_mask |= (1ULL << cpu);
+		se_info("[pinning] devfs io_worker tid=%-2d -> CPU %-3d "
+			"(NUMA%d)",
+			tid, cpu, numa);
+	}
+
+	snprintf(core_mask_str, core_mask_str_size, "0x%lx", core_mask);
+	se_info("[pinning] devfs total io workers=%d, DPDK core_mask=%s",
+		num_qpair, core_mask_str);
+	return 0;
+}
+
 static int set_opts(struct spdk_env_opts *env_opts,
-		    struct nvmf_config *nvmf_conf)
+		    const struct se_config *se_config, int num_qpair,
+		    char *core_mask_str, size_t core_mask_str_size)
 {
 	char nvmf_conf_str[256];
 #ifdef USE_NVME_STORAGE_ENGINE
-	// nvme_config is passed as nvmf_conf.
-	construct_nvme_config_string(nvmf_conf_str,
-				     (struct nvme_config *)nvmf_conf);
+	construct_nvme_config_string(nvmf_conf_str, &se_config->nvme);
 	env_opts->no_pci = false;
 #else
-	construct_nvmf_config_string(nvmf_conf_str, nvmf_conf);
+	construct_nvmf_config_string(nvmf_conf_str, &se_config->nvmf);
 	env_opts->no_pci = true;
 #endif
 
 	g_queue_depth = 128; // -q
-	// env_opts->core_mask = "0x3f"; // -c core mask. 6 cores
-	env_opts->core_mask = "0xf"; // -c core mask. 4 cores
-	// env_opts->core_mask = "0x7"; // -c core mask. 3 cores
-	// env_opts->core_mask = "0x3"; // -c core mask. 2 cores
-	// env_opts->core_mask = "0x1"; // -c core mask. 1 core
+	if (create_devfs_core_mask(num_qpair, core_mask_str,
+				   core_mask_str_size)) {
+		return -1;
+	}
+	env_opts->core_mask = core_mask_str;
 	g_io_size_bytes =
 		4096; // -o // Not used but required to pass some checking.
 
@@ -1171,22 +1201,20 @@ static int set_opts(struct spdk_env_opts *env_opts,
 
 static pthread_t poll_ctrl_thread_id = 0;
 
-static threadpool init_nvmf(void *arg)
+static threadpool init_nvmf(struct se_config *se_config, int num_qpair)
 {
 	int rc;
-	int num_qpair;
 	struct worker_thread *worker;
 	struct ns_worker_ctx *ns_ctx;
 	struct spdk_env_opts opts;
 	threadpool thpool = NULL;
+	char core_mask[20];
 
-	struct se_config *se_config;
-
-	se_config = (struct se_config *)arg;
-
-	num_qpair = se_config->nvmf.num_qpair;
-
+#ifdef USE_NVME_STORAGE_ENGINE
+	g_max_io_requests_in_qpair = se_config->nvme.num_io_requests;
+#else
 	g_max_io_requests_in_qpair = se_config->nvmf.num_io_requests;
+#endif
 
 	/* Use the runtime PID to set the random seed */
 	srand(getpid());
@@ -1196,7 +1224,8 @@ static threadpool init_nvmf(void *arg)
 	opts.pci_allowed = g_allowed_pci_addr;
 
 	// Config explicitly.
-	rc = set_opts(&opts, &se_config->nvmf);
+	rc = set_opts(&opts, se_config, num_qpair, core_mask,
+		      sizeof(core_mask));
 	if (rc < 0) {
 		goto err;
 	}
@@ -1266,7 +1295,8 @@ static threadpool init_nvmf(void *arg)
 	}
 
 	// This threads are used as RPC message handler and IO worker.
-	thpool = spdk_thpool_init(num_qpair, "ioworker");
+	thpool = spdk_thpool_init_with_pinning(num_qpair, "ioworker",
+					       OXB_PIN_DOMAIN_DEVFS);
 
 	// Set initialization to true.
 	se_info("NVMF initialized.");
@@ -1373,9 +1403,7 @@ static void dump_nvmf_init_info(void)
 
 int nvmf_init(struct se_config *se_config, int num_qpairs)
 {
-	se_config->nvmf.num_qpair = num_qpairs;
-
-	se_config->nvmf.worker_thpool = init_nvmf(se_config);
+	se_config->worker_thpool = init_nvmf(se_config, num_qpairs);
 
 	return 0;
 }

@@ -1,6 +1,5 @@
 #!/bin/bash
 # set -xve
-# TOTAL_HUGEMEM_SIZE=16384 # in MB.
 TOTAL_HUGEMEM_SIZE=2048 # in MB.
 SPDK_HUGENODE=${SPDK_HUGENODE:-1}
 
@@ -10,23 +9,34 @@ if [ -z "$OXBOW_ENV_SOURCED" ]; then
 fi
 
 printUsage() {
-	echo "Usage: $(basename $0) [-r]
+	echo "Usage: $(basename $0) [-r] [--host-journaling]
 	without option : Set up SPDK.
-        -r : reset."
+        -r : reset.
+        --host-journaling : Configuration for host journaling mode. It includes DevFS NVMe VF and uses 8192 MB hugepages."
 }
 
 RESET=""
+HOST_JOURNALING=""
 
-while getopts "r?h" opt; do
-	case $opt in
-	r)
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+	-r)
 		RESET="reset"
 		;;
-	h | ?)
+	--host-journaling)
+		HOST_JOURNALING="true"
+		TOTAL_HUGEMEM_SIZE=8192
+		;;
+	-h | --help)
+		printUsage
+		exit 0
+		;;
+	*)
 		printUsage
 		exit 2
 		;;
 	esac
+	shift
 done
 
 # Set hugepages.
@@ -39,7 +49,15 @@ done
 # in PCI_ALLOWED, but the /sys unbind sysfs only accepts one BDF per
 # write, so we iterate.
 source $SECURE_DAEMON/secure_daemon_conf.sh
-: "${pcie_nvme_addr:=}"
+secure_daemon_pcie_nvme_addr="$pcie_nvme_addr"
+
+devfs_pcie_nvme_addr=""
+if [ -n "$HOST_JOURNALING" ]; then
+	source $DEVFS/devfs_conf.sh
+	devfs_pcie_nvme_addr="$pcie_nvme_addr"
+fi
+
+pcie_nvme_addr="$secure_daemon_pcie_nvme_addr $devfs_pcie_nvme_addr"
 # CMD="sudo PCI_ALLOWED=$pcie_nvme_addr HUGEMEM=16384 HUGE_EVEN_ALLOC=yes $SPDK/scripts/setup.sh $RESET"
 
 # Sometimes nvme prevents spdk driver binding.

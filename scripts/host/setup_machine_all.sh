@@ -9,7 +9,7 @@ fi
 
 if [ "$1" == "host" ]; then
 	$SCRIPTS/host/setup_sriov_vf.sh && \
-	$SCRIPTS/host/setup_spdk_host-journaling.sh
+	$SCRIPTS/host/setup_spdk.sh --host-journaling
 	echo "Setup Done."
 else
 	$SCRIPTS/host/nvme-of/config_nvmf_server.sh && \

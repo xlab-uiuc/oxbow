@@ -726,7 +726,8 @@ static struct thpool_ *create_spdk_io_threads_multi(
 		}
 	}
 
-	ret = spdk_thpool_init(iod_thread_nr, "oxbow_ioworkers");
+	ret = spdk_thpool_init_with_pinning(iod_thread_nr, "oxbow_ioworkers",
+					    OXB_PIN_DOMAIN_SECURE_DAEMON);
 
 	is_io_thpool_init = true;
 
@@ -734,7 +735,7 @@ static struct thpool_ *create_spdk_io_threads_multi(
 }
 
 /* Build the DPDK EAL core mask by unioning the per-tid pinning targets
- * returned by oxb_pin_cpu_for_tid(). Using the same policy as the IO
+ * returned by oxb_sd_pin_cpu_for_tid(). Using the same policy as the IO
  * thread pool ensures DPDK initializes lcores on every NUMA node that
  * will host an IO worker, so hugepage pools and per-lcore structures
  * are spread across sockets and spdk_malloc(SPDK_ENV_SOCKET_ID_ANY) DMA
@@ -754,8 +755,8 @@ static int create_core_mask(int num_qpair, char *core_mask_str)
 	}
 
 	for (int tid = 0; tid < num_qpair; tid++) {
-		int cpu = oxb_pin_cpu_for_tid(tid, num_qpair);
-		int numa = oxb_pin_numa_for_tid(tid, num_qpair);
+		int cpu = oxb_sd_pin_cpu_for_tid(tid, num_qpair);
+		int numa = oxb_sd_pin_numa_for_tid(tid, num_qpair);
 		if (cpu < 0 || cpu >= (int)(sizeof(core_mask) * 8)) {
 			oxb_error("create_core_mask: cpu %d for tid %d out of "
 				  "mask range (total=%d); check "

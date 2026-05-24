@@ -24,7 +24,7 @@ export nvmf_subnqn="oxbow-nvmf"
 
 # Only used when we do host background journaling and DevFS uses nvme instead of
 # nvmf. (HOST_JOURNALING and USE_NVME_STORAGE_ENGINE is set)
-# Otherwise, the number of worker threads is defined in the set_opts() function in se_nvmf.c.
+# Otherwise, the number of worker threads is defined in the set_opts() function in se_nvmf_fast.c.
 # Note that, max is 7 due to 1 is dedicated to fsync in the secure daemon implementation.
 export storage_engine_thread_num=3
 

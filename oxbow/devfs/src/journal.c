@@ -581,7 +581,7 @@ int init_journal(void)
 	set_nvme_config(&se_conf.nvme, g_devfs_conf.pcie_nvme_addr,
 			g_devfs_conf.spdk_max_io_requests_in_qpair);
 
-	// NOTE: DevFS NVMe storage engine is configured in se_nvmf.c.
+	// NOTE: DevFS NVMe storage engine is configured in se_nvmf_fast.c.
 #else
 	set_nvmf_config(&se_conf.nvmf, g_devfs_conf.nvmf_ip_addr,
 			g_devfs_conf.nvmf_port, g_devfs_conf.nvmf_subnqn,
@@ -590,7 +590,7 @@ int init_journal(void)
 	// rpc handler thread pool is shared with storage engine.
 	ret = init_storage_engine(SE_NVMF, &se_conf,
 				  g_devfs_conf.rpc_thread_num);
-	worker_thpool = se_conf.nvmf.worker_thpool;
+	worker_thpool = se_conf.worker_thpool;
 
 	if (ret != 0) {
 		oxb_error("Storage engine init failed. ret=%d", ret);

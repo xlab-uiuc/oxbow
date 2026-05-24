@@ -135,6 +135,8 @@ UFSBENCH_WORKLOADS # Select workloads to run.
 UFSBENCH_IOSIZE # I/O size.
 UFSBENCH_FILESIZE # Per-process file size.
 UFSBENCH_ENABLE_PERF # Enable perf.
+OXBOW_HOST_JOURNALING # Running bench with oxbow's host journaling (using two SSDs)
+OXBOW_HOST_JOURNALING_WITH_SRIOV # Running bench with oxbow's host journaling (using SRIOV SSD)
 ...
 ```
 
