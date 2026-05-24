@@ -32,7 +32,6 @@ void load_devfs_configs(void)
 	LOAD_CONFIG_INT(data_fetcher_rdma_port_second);
 	LOAD_CONFIG_INT(spdk_max_io_requests_in_qpair);
 	LOAD_CONFIG_INT(nvmf_max_inflight_per_qpair);
-	LOAD_CONFIG_INT(storage_engine_thread_num);
 	LOAD_CONFIG_INT(rpc_thread_num);
 }
 
@@ -49,7 +48,6 @@ void print_devfs_configs(void)
 	PRINT_CONFIG_INT(data_fetcher_rdma_port_second);
 	PRINT_CONFIG_INT(spdk_max_io_requests_in_qpair);
 	PRINT_CONFIG_INT(nvmf_max_inflight_per_qpair);
-	PRINT_CONFIG_INT(storage_engine_thread_num);
 	PRINT_CONFIG_INT(rpc_thread_num);
 	printf("--------------------------------------\n");
 }

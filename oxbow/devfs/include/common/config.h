@@ -5,7 +5,6 @@ struct common_config {
 	char *pcie_nvme_addr;
 	char *rpc_rdma_ip_addr;
 	int rpc_rdma_port;
-	int storage_engine_thread_num;
 	int rpc_rdma_thread_num;
 	int rpc_shmem_thread_num;
 	char *filesystem;

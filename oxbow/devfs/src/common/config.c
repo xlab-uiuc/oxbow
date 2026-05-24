@@ -26,7 +26,6 @@ void load_common_configs(void)
 	LOAD_CONFIG_STR(rpc_rdma_ip_addr);
 	LOAD_CONFIG_INT(rpc_rdma_port);
 	LOAD_CONFIG_INT(spdk_max_io_requests_in_qpair);
-	LOAD_CONFIG_INT(storage_engine_thread_num);
 	LOAD_CONFIG_INT(rpc_rdma_thread_num);
 	LOAD_CONFIG_INT(rpc_shmem_thread_num);
 	LOAD_CONFIG_STR(filesystem);
@@ -39,7 +38,6 @@ void print_common_configs(void)
 	PRINT_CONFIG_STR(rpc_rdma_ip_addr);
 	PRINT_CONFIG_INT(rpc_rdma_port);
 	PRINT_CONFIG_INT(spdk_max_io_requests_in_qpair);
-	PRINT_CONFIG_INT(storage_engine_thread_num);
 	PRINT_CONFIG_INT(rpc_rdma_thread_num);
 	PRINT_CONFIG_INT(rpc_shmem_thread_num);
 	PRINT_CONFIG_STR(filesystem);

@@ -159,18 +159,16 @@ int main(int argc, char *argv[])
 	if (g_se_type == SE_NVME) {
 		set_nvme_config(&se_conf.nvme, g_devfs_conf.pcie_nvme_addr,
 				g_devfs_conf.spdk_max_io_requests_in_qpair);
-		rc = init_storage_engine(
-			SE_NVME, &se_conf,
-			g_devfs_conf.storage_engine_thread_num);
+		rc = init_storage_engine(SE_NVME, &se_conf,
+					 g_devfs_conf.rpc_thread_num);
 
 	} else if (g_se_type == SE_NVMF) {
 		set_nvmf_config(&se_conf.nvmf, g_devfs_conf.nvmf_ip_addr,
 				g_devfs_conf.nvmf_port,
 				g_devfs_conf.nvmf_subnqn,
 				g_devfs_conf.spdk_max_io_requests_in_qpair);
-		rc = init_storage_engine(
-			SE_NVMF, &se_conf,
-			g_devfs_conf.storage_engine_thread_num);
+		rc = init_storage_engine(SE_NVMF, &se_conf,
+					 g_devfs_conf.rpc_thread_num);
 
 	} else {
 		log_error("Unknown storage engine type: %d", g_se_type);

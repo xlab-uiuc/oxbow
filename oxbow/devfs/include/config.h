@@ -12,7 +12,6 @@ struct devfs_config {
 	int data_fetcher_rdma_port_second;
 	int spdk_max_io_requests_in_qpair;
 	int nvmf_max_inflight_per_qpair;
-	int storage_engine_thread_num;
 	int rpc_thread_num;
 };
 
